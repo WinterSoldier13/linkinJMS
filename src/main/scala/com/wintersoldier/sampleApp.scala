@@ -32,6 +32,7 @@ object sampleApp
             .option("password", password_)
             .option("acknowledge", acknowledge)
             .option("clientId", clientId)
+            .option("interval", "1000")
             .load()
     
         df.writeStream
