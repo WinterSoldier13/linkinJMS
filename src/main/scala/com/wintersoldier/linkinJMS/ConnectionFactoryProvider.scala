@@ -16,6 +16,5 @@ class AMQConnectionFactoryProvider extends ConnectionFactoryProvider {
         val activeOb = new ActiveMQConnectionFactory(options("username"), options("password"), options("brokerUrl"))
         activeOb
     }
-}   }
 }
 

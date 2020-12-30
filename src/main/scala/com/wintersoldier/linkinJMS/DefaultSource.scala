@@ -10,7 +10,7 @@ import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 
 import javax.jms.{ConnectionFactory, Session}
 
-private[jms] class DefaultSource extends RelationProvider with SchemaRelationProvider with CreatableRelationProvider with DataSourceRegister with StreamSourceProvider with StreamSinkProvider{
+private[linkinJMS] class DefaultSource extends RelationProvider with SchemaRelationProvider with CreatableRelationProvider with DataSourceRegister with StreamSourceProvider with StreamSinkProvider{
     
     override def createRelation(sqlContext: SQLContext, parameters: Map[String, String]): BaseRelation = {
         createRelation(sqlContext, parameters, null)
@@ -57,7 +57,7 @@ private[jms] class DefaultSource extends RelationProvider with SchemaRelationPro
     override def createSource(sqlContext: SQLContext, metadataPath: String, schema: Option[StructType], providerName: String, parameters: Map[String, String]): Source = {
         new JmsStreamingSource(sqlContext,parameters, metadataPath, true)
     }
-    // TODO add SINK
+    
     override def createSink(sqlContext: SQLContext, parameters: Map[String, String], partitionColumns: Seq[String], outputMode: OutputMode): Sink = {
         new JmsStreamingSink(sqlContext,parameters)
         }
