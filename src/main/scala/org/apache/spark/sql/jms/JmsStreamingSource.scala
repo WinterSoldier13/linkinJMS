@@ -18,15 +18,16 @@ class JmsStreamingSource(sqlContext: SQLContext,
                         ) extends Source {
     
     lazy val RECEIVER_TIMEOUT: Long = parameters.getOrElse("receiver.timeout", "3000").toLong
-    lazy val name_ = "ayush"
+    // TODO the client name and the topicName should be generic
+    lazy val clientName = "ayush"
     val connection: Connection = DefaultSource.connectionFactory(parameters).createConnection
-    connection.setClientID(name_)
+    connection.setClientID(clientName)
     
     val session: Session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
     var counter: LongAccumulator = sqlContext.sparkContext.longAccumulator("counter")
     
     val topic : Topic = session.createTopic("sample_topic2")
-    val subscriber : TopicSubscriber = session.createDurableSubscriber(topic, name_)
+    val subscriber : TopicSubscriber = session.createDurableSubscriber(topic, clientName)
     connection.start()
     
     override def getOffset: Option[Offset] = {
@@ -57,7 +58,6 @@ class JmsStreamingSource(sqlContext: SQLContext,
             fromString(message.queue)
         ))
         val rdd = sqlContext.sparkContext.parallelize(internalRDD)
-        //        sqlContext.internalCreateDataFrame(rdd,schema,isStreaming = true)
         sqlContext.internalCreateDataFrame(rdd, schema = schema, isStreaming = true)
         
     }
