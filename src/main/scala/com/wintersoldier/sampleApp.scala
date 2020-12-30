@@ -19,7 +19,7 @@ object sampleApp
         val username_ : String = "username"
         val password_ : String = "password"
         val connectionType : String = "activemq"
-        val clientId = "ayush"
+        val clientId = "coldplay"
         val acknowledge = "true"
         
         val df = spark

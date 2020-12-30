@@ -17,16 +17,17 @@ class JmsStreamingSource(sqlContext: SQLContext,
                          failOnDataLoss: Boolean
                         ) extends Source {
     
-    lazy val RECEIVER_TIMEOUT: Long = parameters.getOrElse("receiver.timeout", "3000").toLong
-    // TODO the client name and the topicName should be generic
-    lazy val clientName = "ayush"
+    lazy val RECEIVER_TIMEOUT: Long = parameters.getOrElse("receiver.timeout", "1000").toLong
+    val clientName : String = parameters.getOrElse("clientId","client")
+    val topicName : String = parameters.getOrElse("topic", "sampleTopic")
+    
     val connection: Connection = DefaultSource.connectionFactory(parameters).createConnection
     connection.setClientID(clientName)
     
     val session: Session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
     var counter: LongAccumulator = sqlContext.sparkContext.longAccumulator("counter")
     
-    val topic : Topic = session.createTopic("sample_topic2")
+    val topic : Topic = session.createTopic(topicName)
     val subscriber : TopicSubscriber = session.createDurableSubscriber(topic, clientName)
     connection.start()
     
@@ -41,6 +42,13 @@ class JmsStreamingSource(sqlContext: SQLContext,
         val messageList: ListBuffer[JmsMessage] = ListBuffer()
         while (break) {
             val textMsg = subscriber.receive(RECEIVER_TIMEOUT).asInstanceOf[TextMessage]
+            
+//            if(textMsg!=null && textMsg.getText == "testingFail")
+//                {
+//                    val iota : Int = 3/0
+//                }
+            
+            // I am using this line to acknowledge individual textMessages
             if (parameters.getOrElse("acknowledge", "false").toBoolean && textMsg != null) {
                 textMsg.acknowledge()
             }
