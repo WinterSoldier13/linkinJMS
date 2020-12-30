@@ -9,7 +9,7 @@ object sampleApp
         .master("local[*]")
         .getOrCreate()
     import spark.implicits._
-    
+    spark.sparkContext.setCheckpointDir("/home/wintersoldier/Desktop/checkpoint")
     
     spark.sparkContext.setLogLevel("ERROR")
     def main(array: Array[String]): Unit ={
@@ -37,6 +37,7 @@ object sampleApp
         df.writeStream
             .outputMode("append")
             .format("console")
+            .option("checkpointLocation", "/home/wintersoldier/Desktop/checkpoint")
             .start
             .awaitTermination()
         spark.close()
