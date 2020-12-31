@@ -17,7 +17,7 @@ class JmsStreamingSource(sqlContext: SQLContext,
                          failOnDataLoss: Boolean
                         ) extends Source {
     
-    lazy val RECEIVER_TIMEOUT: Long = parameters.getOrElse("interval", "1000").toLong
+    lazy val RECEIVER_TIMEOUT: Long = parameters.getOrElse("readInterval", "1000").toLong
     val clientName : String = parameters.getOrElse("clientId","client")
     val topicName : String = parameters.getOrElse("topic", "sampleTopic")
     

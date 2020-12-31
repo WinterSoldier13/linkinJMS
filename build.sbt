@@ -7,8 +7,10 @@ scalaVersion := "2.11.11"
 
 val sparkV = "2.4.0"
 
+//for ActiveMQ
 libraryDependencies += "org.apache.activemq" % "activemq-all" % "5.16.0"
 
+//for Spark
 libraryDependencies ++= Seq(
     "org.apache.spark" %% "spark-core" %  sparkV,
     "org.apache.spark" %% "spark-mllib" % sparkV ,

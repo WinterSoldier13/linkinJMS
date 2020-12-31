@@ -68,6 +68,7 @@ object DefaultSource {
     
     def connectionFactory(parameters: Map[String, String]): ConnectionFactory = parameters("connection") match {
         case "activemq" => new AMQConnectionFactoryProvider().createConnection(parameters)
+        case _ => throw IllegalArgumentException
     }
     
 }
