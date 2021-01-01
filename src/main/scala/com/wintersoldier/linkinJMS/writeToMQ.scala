@@ -51,6 +51,20 @@ class writeToMQ {
         }
     }
     
+    def directWrite(df: DataFrame): Unit =
+    {
+        createConnections()
+        df.writeStream
+            .option("checkpointLocation", "/home/wintersoldier/Desktop/checkpoint")
+            .foreachBatch((batch: DataFrame, batchID: Long) => {
+                println("The batch ID is: " + batchID)
+                batch.show()
+//                writeOn(batch, batchID)
+            })
+            .start
+            .awaitTermination()
+    }
+    
     def closeConnection(): Unit =
     {
         this.producer.close()
