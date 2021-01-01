@@ -51,7 +51,7 @@ private[linkinJMS] class DefaultSource extends RelationProvider with SchemaRelat
     
     override def sourceSchema(sqlContext: SQLContext, schema: Option[StructType], providerName: String, parameters: Map[String, String]): (String, StructType) = {
         require(schema.isEmpty, "JMS source has a fixed schema and cannot be set with a custom one")
-        (shortName,ScalaReflection.schemaFor[JmsMessage].dataType.asInstanceOf[StructType])
+        (shortName(),ScalaReflection.schemaFor[JmsMessage].dataType.asInstanceOf[StructType])
     }
     
     override def createSource(sqlContext: SQLContext, metadataPath: String, schema: Option[StructType], providerName: String, parameters: Map[String, String]): Source = {
@@ -68,6 +68,7 @@ object DefaultSource {
     
     def connectionFactory(parameters: Map[String, String]): ConnectionFactory = parameters("connection") match {
         case "activemq" => new AMQConnectionFactoryProvider().createConnection(parameters)
+        case _ => new AMQConnectionFactoryProvider().createConnection(parameters)
             // todo Figure out how to throw exception if there is a mismatch
             
     }

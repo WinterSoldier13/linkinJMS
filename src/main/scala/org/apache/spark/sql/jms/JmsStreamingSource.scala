@@ -18,8 +18,9 @@ class JmsStreamingSource(sqlContext: SQLContext,
                         ) extends Source {
     
     lazy val RECEIVER_TIMEOUT: Long = parameters.getOrElse("readInterval", "1000").toLong
-    val clientName : String = parameters.getOrElse("clientId","client")
-    val topicName : String = parameters.getOrElse("topic", "sampleTopic")
+    val clientName : String = parameters.getOrElse("clientId","client000")
+    val topicName : String = parameters.getOrElse("topic", "sample_topic")
+    val queueName : String = parameters.getOrElse("queue", "")
     
     val connection: Connection = DefaultSource.connectionFactory(parameters).createConnection
     connection.setClientID(clientName)
@@ -30,6 +31,7 @@ class JmsStreamingSource(sqlContext: SQLContext,
     //todo Add support for queue
     val topic : Topic = session.createTopic(topicName)
     val subscriber : TopicSubscriber = session.createDurableSubscriber(topic, clientName)
+    
     connection.start()
     
     override def getOffset: Option[Offset] = {
