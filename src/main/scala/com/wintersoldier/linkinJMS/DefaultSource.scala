@@ -68,6 +68,8 @@ object DefaultSource {
     
     def connectionFactory(parameters: Map[String, String]): ConnectionFactory = parameters("connection") match {
         case "activemq" => new AMQConnectionFactoryProvider().createConnection(parameters)
+            // todo Figure out how to throw exception if there is a mismatch
+            
     }
     
 }

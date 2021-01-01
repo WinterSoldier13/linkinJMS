@@ -12,8 +12,23 @@ trait ConnectionFactoryProvider {
 class AMQConnectionFactoryProvider extends ConnectionFactoryProvider {
     
     override def createConnection(options: Map[String, String]): ConnectionFactory = {
-//        new ActiveMQConnectionFactory()
-        val activeOb = new ActiveMQConnectionFactory(options("username"), options("password"), options("brokerUrl"))
+        val brokerUrl : String = options.getOrElse("brokerUrl", "")
+        val username : String = options.getOrElse("username", "")
+        val password : String = options.getOrElse("password", "")
+        
+        if(brokerUrl == "")
+            {
+                println("'brokerUrl' parameter not passed, proceeding with default value")
+                new ActiveMQConnectionFactory()
+            }
+        if(username == "" || password == "")
+            {
+                println("'username' or 'password' not passed")
+                 val object_ = new ActiveMQConnectionFactory(brokerUrl)
+                 return object_
+            }
+            
+        val activeOb = new ActiveMQConnectionFactory(username, password, brokerUrl)
         activeOb
     }
 }
