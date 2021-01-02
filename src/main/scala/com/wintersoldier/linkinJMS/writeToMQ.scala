@@ -1,12 +1,13 @@
 package com.wintersoldier.linkinJMS
 
 import org.apache.activemq.ActiveMQConnectionFactory
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import javax.jms.{Connection, MessageProducer, Session, Topic}
 
-class writeToMQ {
-    
+class writeToMQ(implicit spark : SparkSession) extends Serializable
+{
+    import spark.implicits._
     private var clientId: String = "iAmWritingClient"
     private var topicName: String = "writing2thisTopic"
     private var username: String = "username"
@@ -34,6 +35,7 @@ class writeToMQ {
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
         this.topic = session.createTopic(this.topicName)
         this.producer = session.createProducer(topic)
+        println("connection successful")
     }
     
     
@@ -59,7 +61,7 @@ class writeToMQ {
             .foreachBatch((batch: DataFrame, batchID: Long) => {
                 println("The batch ID is: " + batchID)
                 batch.show()
-//                writeOn(batch, batchID)
+                writeOn(batch, batchID)
             })
             .start
             .awaitTermination()

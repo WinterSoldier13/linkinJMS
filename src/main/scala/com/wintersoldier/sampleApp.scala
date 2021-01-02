@@ -8,8 +8,8 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 //import org.apache.spark.sql.DataFrame
 //import javax.jms.{Connection, MessageProducer, Session, Topic}
 
-object sampleApp{
-    val spark: SparkSession = SparkSession
+object sampleApp {
+    implicit val spark: SparkSession = SparkSession
         .builder()
         .appName("sampleApp")
         .master("local[*]")
@@ -31,7 +31,6 @@ object sampleApp{
 //    val topic: Topic = session.createTopic("writing2thisTopic")
 //    val producer: MessageProducer = session.createProducer(topic)
 //    private var latestBatchID = -1L
-//
     
     def main(array: Array[String]): Unit = {
         
@@ -43,6 +42,7 @@ object sampleApp{
         val clientId: String = "coldplay"
         val acknowledge: String = "true"
         val readInterval: String = "2000"
+        val queueName : String = "sampleQ"
         
         val df = spark
             .readStream
@@ -55,10 +55,18 @@ object sampleApp{
             .option("acknowledge", acknowledge)
             .option("clientId", clientId)
             .option("readInterval", readInterval)
+//            .option("queue", queueName)
             .load()
         
-        val ob = new writeToMQ
-        ob.directWrite(df)
+        val ob = new writeToMQ()
+//        ob.directWrite(df)
+        //solution https://medium.com/swlh/spark-serialization-errors-e0eebcf0f6e6
+        
+        df.writeStream
+            .format("console")
+            .outputMode("append")
+            .start
+            .awaitTermination()
         
 //        df.writeStream
 //            //            .outputMode("append")
