@@ -26,27 +26,25 @@ class JmsStreamingSource(sqlContext: SQLContext,
     connection.setClientID(clientName)
     
     val session: Session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
-    val typeOfSub: Int = getTheSub.getOrElse(2) // 1-> Topic 0-> Queue
+    val typeOfSub: Int = getTheSub // 1-> Topic 0-> Queue
     
-    if(typeOfSub == 2)
-        {
-            throw new IllegalArgumentException
-        }
-    var counter: LongAccumulator = sqlContext.sparkContext.longAccumulator("counter")
+    if (typeOfSub == 2) {
+        throw new IllegalArgumentException
+    }
     private val subscriberT: Option[TopicSubscriber] = if (typeOfSub == 1) Some(session.createDurableSubscriber(session.createTopic(topicName), clientName)) else None
     private val subscriberQ: Option[MessageConsumer] = if (typeOfSub == 0) Some(session.createConsumer(session.createQueue(queueName))) else None
+    var counter: LongAccumulator = sqlContext.sparkContext.longAccumulator("counter")
     
-    
-    def getTheSub: Option[Int] = {
+    def getTheSub: Int = {
         if (topicName.trim != "") {
-            Some(1)
+            1
         }
         else if (topicName.trim == "" && queueName.trim != "") {
-            Some(0)
+            0
         }
         else {
             println("<><><><><><>ERROR: Neither 'queue' name nor 'topic' name passed<><><><><><>")
-            Some(2)
+            2
         }
     }
     
