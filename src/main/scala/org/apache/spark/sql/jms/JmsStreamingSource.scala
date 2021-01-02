@@ -30,7 +30,39 @@ class JmsStreamingSource(sqlContext: SQLContext,
     
     //todo Add support for queue
     val topic : Topic = session.createTopic(topicName)
-    val subscriber : TopicSubscriber = session.createDurableSubscriber(topic, clientName)
+//    val subscriber : TopicSubscriber = session.createDurableSubscriber(topic, clientName)
+    
+    val alpha: (Any, Int) = getTheSub
+    val typeOfSub: Int = getTheSub._2  // 1-> Topic 0-> Queue
+    private var subscriberT : TopicSubscriber = _
+    private var subscriberQ : MessageConsumer = _
+
+    if(typeOfSub == 1)
+        subscriberT = alpha._1.asInstanceOf[TopicSubscriber]
+    else
+        subscriberQ = alpha._2.asInstanceOf[MessageConsumer]
+
+
+
+    def getTheSub: (Any, Int) ={
+        if(topicName != "")
+            {
+                val topic  : Topic = session.createTopic(topicName)
+                (session.createDurableSubscriber(topic, clientName), 1)
+            }
+        else if(topicName == "" && queueName != "")
+            {
+                val queue = session.createQueue(queueName)
+                (session.createConsumer(queue), 0)
+            }
+        else
+            {
+                println("Neither 'queue' name nor 'topic' name passed... proceeding with 'sample_topic' ")
+                val topic = session.createTopic("sample_topic")
+                (session.createDurableSubscriber(topic, clientName), 1)
+            }
+    }
+    
     
     connection.start()
     
@@ -44,12 +76,21 @@ class JmsStreamingSource(sqlContext: SQLContext,
         var break = true
         val messageList: ListBuffer[JmsMessage] = ListBuffer()
         while (break) {
-            val textMsg = subscriber.receive(RECEIVER_TIMEOUT).asInstanceOf[TextMessage]
+            def getTextMsg : TextMessage =  {
+                if(typeOfSub == 1)
+                    subscriberT.receive(RECEIVER_TIMEOUT).asInstanceOf[TextMessage]
+                else
+                    subscriberQ.receive(RECEIVER_TIMEOUT).asInstanceOf[TextMessage]
+            }
+            val textMsg : TextMessage = getTextMsg
             
-//            if(textMsg!=null && textMsg.getText == "testingFail")
-//                {
-//                    val iota : Int = 3/0
-//                }
+
+            
+            // the below code is to test the acknowledgement of individual messages
+/*            if(textMsg!=null && textMsg.getText == "testingFail")
+                {
+                    val iota : Int = 3/0
+                }*/
             
             // I am using this line to acknowledge individual textMessages
             if (parameters.getOrElse("acknowledge", "false").toBoolean && textMsg != null) {
