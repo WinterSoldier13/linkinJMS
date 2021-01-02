@@ -28,7 +28,6 @@ class JmsStreamingSource(sqlContext: SQLContext,
     val session: Session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
     var counter: LongAccumulator = sqlContext.sparkContext.longAccumulator("counter")
     
-    //todo Add support for queue
     val topic : Topic = session.createTopic(topicName)
     val subscriber : TopicSubscriber = session.createDurableSubscriber(topic, clientName)
     
