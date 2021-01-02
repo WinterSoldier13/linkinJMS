@@ -6,6 +6,7 @@ An `structured streaming` source for `Spark` to read data from a streaming sourc
 
 ## How to use with spark?
 Please refer to `src/main/scala/com/wintersoldier/sampleApp.scala`
+<a href="https://github.com/WinterSoldier13/linkinJMS/blob/main/src/main/scala/com/wintersoldier/sampleApp.scala" target="__blank">here</a>
 
 ## Why the name?
 I was listening to LinkinPark. LOL.
