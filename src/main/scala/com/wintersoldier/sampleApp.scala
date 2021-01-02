@@ -55,6 +55,7 @@ object sampleApp {
             .option("acknowledge", acknowledge)
             .option("clientId", clientId)
             .option("readInterval", readInterval)
+//            .option("queue", queueName)
             .load()
         
         val ob = new writeToMQ()
@@ -62,16 +63,22 @@ object sampleApp {
         //solution https://medium.com/swlh/spark-serialization-errors-e0eebcf0f6e6
         
         df.writeStream
-            //            .outputMode("append")
-            //            .format("console")
-            .option("checkpointLocation", "/home/wintersoldier/Desktop/checkpoint")
-            .foreachBatch((batch: DataFrame, batchID: Long) => {
-                println("The batch ID is: " + batchID)
-                batch.show()
-//                writeOn(batch, batchID)
-            })
+            .format("console")
+            .outputMode("append")
             .start
             .awaitTermination()
+        
+//        df.writeStream
+//            //            .outputMode("append")
+//            //            .format("console")
+//            .option("checkpointLocation", "/home/wintersoldier/Desktop/checkpoint")
+//            .foreachBatch((batch: DataFrame, batchID: Long) => {
+//                println("The batch ID is: " + batchID)
+//                batch.show()
+////                writeOn(batch, batchID)
+//            })
+//            .start
+//            .awaitTermination()
         
         // Closing the writing part
 //        producer.close()
